@@ -1,8 +1,6 @@
 
 import javax.imageio.ImageIO;
-import javax.swing.*;
 
-import io.netty.channel.unix.Buffer;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -17,7 +15,7 @@ public class Filters {
         this.image = image;
         this.out = new File("C:\\Users\\guybo\\vscode_projects\\ImageProcessing-master\\src\\main\\resources\\catBoy.png");
         try {
-            ImageIO.write(image , "png" , out);
+            ImageIO.write(this.image , "png" , out);
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -114,36 +112,48 @@ public class Filters {
     }
 
 
-    private boolean isSimilar(Color previousPixel, Color currentColor) {
-        boolean similar = false;
-        int redDiff = Math.abs(previousPixel.getRed() - currentColor.getRed());
-        int greenDiff = Math.abs(previousPixel.getGreen() - currentColor.getGreen());
-        int blueDiff = Math.abs(previousPixel.getBlue() - currentColor.getGreen());
-        if(redDiff + greenDiff + blueDiff < 600) {
-            similar = true;
-        }
-        return similar;
-    }
  
-    public BufferedImage borders() {
-        BufferedImage temp = null;
+    public BufferedImage brighter(int brightLevel, int brightCeiling) {
+        BufferedImage tempImg = null;
         try {
-            temp = ImageIO.read(this.out);
-            Color previousPixel = null;
-            for(int x = 0; x < temp.getWidth(); x++) {
-                Color currentColor = null;
-                for(int y = 0; y < temp.getHeight(); y++) {
-                    currentColor = new Color(temp.getRGB(x, y));
-                    if(previousPixel != null && !isSimilar(previousPixel, currentColor)) {
-                        temp.setRGB(x, y, Color.BLACK.getRGB());
+            tempImg = ImageIO.read(this.out);
+            for (int x = 0; x < tempImg.getWidth(); x++) {
+                for (int y = 0; y < tempImg.getHeight(); y++) {
+                    int pixel1 = tempImg.getRGB(x, y);
+                    Color color1 = new Color(pixel1);
+                    int red = color1.getRed();
+                    int green = color1.getGreen();
+                    int blue = color1.getBlue();
+                    if(red + brightLevel > brightCeiling) {
+                        red = brightCeiling;
                     }
+                    else{
+                        red += brightLevel;
+                    }
+
+                    if(green + brightLevel > brightCeiling) {
+                        green = brightCeiling;
+                    }
+                    else{
+                        green += brightLevel;
+                    }
+
+                    if(blue + brightLevel > brightCeiling) {
+                        blue = brightCeiling;
+                    }
+                    else{
+                        blue += brightLevel;
+                    }
+
+
+                    Color color = new Color(red, green, blue);
+                    tempImg.setRGB(x, y, color.getRGB());
                 }
-                previousPixel = currentColor;
             }
-        } catch (Exception e) {
-            //TODO: handle exception
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        return temp;
+        return tempImg;
     }
 
     public BufferedImage negative() {
@@ -163,7 +173,7 @@ public class Filters {
                 }
             }
         } catch (Exception e) {
-            //TODO: handle exception
+            
         }
 
         return temp;

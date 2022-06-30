@@ -1,8 +1,14 @@
 import javax.imageio.ImageIO;
 import javax.swing.*;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.net.URL;
+import java.util.List;
 
 
 public class MainContent extends JPanel {
@@ -35,17 +41,30 @@ public class MainContent extends JPanel {
 
         this.search.addActionListener((e) -> {
             try {
+                
+                String fInput = this.input.getText();
+                System.setProperty("webdriver.chrome.driver", "D:\\Chrome-Driver\\chromedriver.exe");
+                ChromeDriver driver = new ChromeDriver();
+                
+                String FACEBOOK_URL = "https://www.facebook.com/";
+                driver.get(FACEBOOK_URL + fInput);
+                List<WebElement> profileElements = driver.findElements(By.cssSelector("image[preserveAspectRatio=\"xMidYMid slice\"]"));
+                WebElement imageLink = profileElements.get(0);
+
+
+                
+                String link = imageLink.getAttribute("xlink:href");
                 JLabel pic = new JLabel();
-                pic.setBounds(30, 1, Constants.WIDTH, Constants.HEIGHT);
-                URL url = new URL("https://img.fruugo.com/product/2/47/131338472_max.jpg");
+                pic.setBounds(Constants.PIC_X, Constants.PIC_Y, Constants.PIC_WIDTH, Constants.PIC_HEIGHT);
+                URL url = new URL(link);
                 this.image = ImageIO.read(url);
                 this.imageIcon = new ImageIcon(new ImageIcon(this.image).getImage().
-                        getScaledInstance(500, 700, Image.SCALE_DEFAULT));
+                        getScaledInstance(Constants.IMAGE_ICON_WIDTH, Constants.IMAGE_ICON_HEIGHT, Image.SCALE_DEFAULT));
                 pic.setIcon(this.imageIcon);
                 this.add(pic);
 
                 this.filteredPic = new JLabel();
-                this.filteredPic.setBounds(840, 1, Constants.WIDTH, Constants.HEIGHT);
+                this.filteredPic.setBounds(Constants.FILTERED_PIC_X, Constants.FILTERED_PIC_Y, Constants.PIC_WIDTH, Constants.PIC_HEIGHT);
                 this.filteredPic.setIcon(this.imageIcon);
                 this.add(this.filteredPic);
 
@@ -65,7 +84,7 @@ public class MainContent extends JPanel {
     }
 
     public void buttons() {
-        String[] names = {"Grayscale", "Color Shift Right", "Color Shift Left", "Mirror", "Negative" ,"Add Borders"};
+        String[] names = {"Grayscale", "Color Shift Right", "Color Shift Left", "Mirror", "Negative" ,"Brighter"};
         int y = 100;
         for (int i = 0; i < this.buttons.length; i++) {
             this.buttons[i] = new JButton(names[i]);
@@ -78,54 +97,54 @@ public class MainContent extends JPanel {
         //this.filteredPic.setIcon(this.imageIcon);
         BufferedImage grayscaleImage = filters.grayScale();
         ImageIcon iconGrayscale = new ImageIcon(new ImageIcon(grayscaleImage).getImage().
-        getScaledInstance(500, 700, Image.SCALE_DEFAULT));
+        getScaledInstance(Constants.PIC_WIDTH, Constants.PIC_HEIGHT, Image.SCALE_DEFAULT));
 
         //this.filteredPic.setIcon(this.imageIcon);
         BufferedImage colorShiftRightImage = filters.colorShiftRight();
         ImageIcon iconShiftRight = new ImageIcon(new ImageIcon(colorShiftRightImage).getImage().
-        getScaledInstance(500, 700, Image.SCALE_DEFAULT));
+        getScaledInstance(Constants.PIC_WIDTH, Constants.PIC_HEIGHT, Image.SCALE_DEFAULT));
 
         //this.filteredPic.setIcon(this.imageIcon);
         BufferedImage colorShiftLeftImage = filters.colorShiftLeft();
         ImageIcon iconShiftLeft = new ImageIcon(new ImageIcon(colorShiftLeftImage).getImage().
-        getScaledInstance(500, 700, Image.SCALE_DEFAULT));
+        getScaledInstance(Constants.PIC_WIDTH, Constants.PIC_HEIGHT, Image.SCALE_DEFAULT));
         
         BufferedImage mirrored = filters.mirror();
         ImageIcon iconMirrored = new ImageIcon(new ImageIcon(mirrored).getImage().
-        getScaledInstance(500, 700, Image.SCALE_DEFAULT));
+        getScaledInstance(Constants.PIC_WIDTH, Constants.PIC_HEIGHT, Image.SCALE_DEFAULT));
 
         BufferedImage negative = filters.negative();
         ImageIcon iconNegative = new ImageIcon(new ImageIcon(negative).getImage().
-        getScaledInstance(500, 700, Image.SCALE_DEFAULT));
+        getScaledInstance(Constants.PIC_WIDTH, Constants.PIC_HEIGHT, Image.SCALE_DEFAULT));
 
-        BufferedImage borders = filters.borders();
-        ImageIcon iconBorders = new ImageIcon(new ImageIcon(borders).getImage().
-        getScaledInstance(500, 700, Image.SCALE_DEFAULT));
+        BufferedImage brighter = filters.brighter(Constants.BRIGHT_LEVEL, Constants.BRIGHT_CEILING);
+        ImageIcon iconBorders = new ImageIcon(new ImageIcon(brighter).getImage().
+        getScaledInstance(Constants.PIC_WIDTH, Constants.PIC_HEIGHT, Image.SCALE_DEFAULT));
 
 
 
         //ACTION LISTENERS
-        this.buttons[0].addActionListener((e) -> {
+        this.buttons[Constants.FIRST_BUTTON].addActionListener((e) -> {
             this.filteredPic.setIcon(iconGrayscale);
         });
 
-        this.buttons[1].addActionListener((e) -> {
+        this.buttons[Constants.SECOND_BUTTON].addActionListener((e) -> {
             this.filteredPic.setIcon(iconShiftRight);
         });
 
-        this.buttons[2].addActionListener((e) -> {
+        this.buttons[Constants.THIRD_BUTTON].addActionListener((e) -> {
             this.filteredPic.setIcon(iconShiftLeft);
         });
 
-        this.buttons[3].addActionListener((e) -> {
+        this.buttons[Constants.FOURTH_BUTTON].addActionListener((e) -> {
             this.filteredPic.setIcon(iconMirrored);
         });
 
-        this.buttons[4].addActionListener((e) -> {
+        this.buttons[Constants.FIFTH_BUTTON].addActionListener((e) -> {
             this.filteredPic.setIcon(iconNegative);
         });
 
-        this.buttons[5].addActionListener((e) -> {
+        this.buttons[Constants.SIXTH_BUTTON].addActionListener((e) -> {
             this.filteredPic.setIcon(iconBorders);
         });
 
@@ -148,45 +167,4 @@ public class MainContent extends JPanel {
 
 
 
-//String fInput = this.input.getText();           TRY 1
-//System.setProperty("webdriver.chrome.driver", "D:\\IntelliJ IDEA Community Edition 2021.2.3\\chromedriver.exe");
-//ChromeDriver driver = new ChromeDriver();
-//String FACEBOOK_URL = "https://www.facebook.com/";
-//driver.get(FACEBOOK_URL + fInput);
-//WebElement outerPic = driver.findElement(By.tagName("image"));
-//outerPic.click();
-//WebElement innerPic = driver.findElement(By.tagName("img"));
-//String picLink = innerPic.getAttribute("src");
-//try {
-//    URL picUrl = new URL(picLink);
-//    BufferedImage bufferedImage = ImageIO.read(picUrl);
-//    ImageIcon image = new ImageIcon(bufferedImage);
-//    this.pic = new JLabel();
-//    this.pic.setBounds(0, 100, Constants.WIDTH, Constants.HEIGHT);
-//    this.pic.setIcon(image);
-//    this.add(this.pic);
-//    this.repaint();
-//
-//} catch (Exception ex) {
-//    ex.printStackTrace();
-//}
 
-//new Thread(() -> {        TRY 2
-//    try {
-//        System.setProperty("webdriver.chrome.driver", "D:\\IntelliJ IDEA Community Edition 2021.2.3\\chromedriver.exe");
-//        ChromeDriver driver = new ChromeDriver();
-//        String FACEBOOK_URL ="https://www.facebook.com/";
-//        driver.get(FACEBOOK_URL + fInput);
-//        Thread.sleep(50);
-//        WebElement svg = driver.findElement(By.className("pzggbiyp"));
-//        svg.click();
-//        Thread.sleep(50);
-//        WebElement img = driver.findElement(By.cssSelector("img[src=\"));
-//        String src = img.getAttribute("src");
-//        URL imgUrl = new URL(src);
-//        BufferedImage saveImage = ImageIO.read(imgUrl);
-//        ImageIO.write(saveImage, "png", new File("image.png"));
-//    } catch (Exception ex) {
-//        ex.printStackTrace();
-//    }
-//}).start();
